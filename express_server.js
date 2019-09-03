@@ -35,12 +35,18 @@ app.get("/set", (req, res) => {
   res.send(`a = ${a}`);
  });
 
-app.listen(PORT, () => {
-  // Notify the user when the Server listening the Client
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+});
+
+app.get("/urls/:shortURL", (req, res) => {
+  // console.log("HERERERE");
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  res.render("urls_show", templateVars);
+});
+
+app.listen(PORT, () => {
+  // Notify the user when the Server listening the Client
+  console.log(`Example app listening on port ${PORT}!`);
 });
