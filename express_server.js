@@ -39,3 +39,8 @@ app.listen(PORT, () => {
   // Notify the user when the Server listening the Client
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+app.get("/urls", (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
