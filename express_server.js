@@ -2,10 +2,12 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 
+// Set up field
 app.set("view engine", "ejs");
-
 const bodyParser = require("body-parser");
+var morgan = require('morgan')
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(morgan('dev'));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -64,7 +66,8 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(`/urls/${longURL}`);
   res.redirect(longURL);
 });
 
@@ -75,6 +78,13 @@ app.post("/urls", (req, res) => {
   newLongURL = req.body["longURL"];
   urlDatabase[newLongURL] = shortURL;
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  // codes
+  const shortNewURL = req.params.shortURL;
+  delete urlDatabase[shortNewURL];
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
