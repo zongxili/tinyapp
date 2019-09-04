@@ -11,17 +11,22 @@
       </div>
     </div>
 
-    <% if( username === undefined ){ %>
-      <form method="POST" action="/login/">
-        <input type="text" name="username">
-        <button type="submit" class="btn btn-light">Login</button>
-      </form>
-    <% } else{ %>
-      <form method="POST" action="/logout/">
-        <h6>Logged In As: <%= username %></h6>
-        <button type="submit" class="btn btn-light">Logout</button>
-      </form>
-   <% } %>
+   <% if( passinUser === undefined ){ %>
+    <!-- should display the login and register page -->
+    <form method="GET" action="/login">
+      <button type="submit" class="btn btn-light">Login</button>
+    </form>
+    <form method="GET" action="/register">
+      <button type="submit" class="btn btn-light">Register</button>
+    </form>
+    
+  <% } else{ %>
+    <!-- should have the logout -->
+    <form method="POST" action="/logout/">
+      <h6>Logged In As: <%= passinUser["email"] %></h6>
+      <button type="submit" class="btn btn-light">Logout</button>
+    </form>
+ <% } %>
 
   </nav>
 </header>
