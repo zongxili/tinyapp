@@ -1,5 +1,5 @@
 const express = require("express");
-var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
 const app = express();
 const PORT = 8080;
 
@@ -8,15 +8,23 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 var morgan = require('morgan');
 const bcrypt = require('bcrypt');
+var aesjs = require('aes-js');
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['some_secret_keys'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 // Database area
-const users = { 
+const users = {
     "testingID123": {
-    id: "testingID123", 
-    email: "user@example.com", 
+    id: "testingID123",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
   }
 }
@@ -74,7 +82,7 @@ app.get("/fetch", (req, res) => {
 
 app.get("/urls", (req, res) => {
   console.log("Here is the URLS GET page.");
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
   const user = users[userID];
   // This is the logIN case
   let userDatabase = {};
@@ -95,10 +103,10 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   console.log("In the URLS NEW GET page");
-  console.log("This is REQ.COOKIE: ", req.cookies);
-  console.log(Object.keys(req.cookies).length === 0);
+  console.log("This is REQ.COOKIE: ", req.session);
+  console.log(Object.keys(req.session).length === 0);
 
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
   const user = users[userID];
   // This is the logIN case
   if (user === undefined){
@@ -111,9 +119,8 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
   const user = users[userID];
-  console.log("req.body", req.body);
   console.log("req.params", req.params);
   shortLink = req.params.shortURL;
   longLink = urlDatabase[shortLink]["longURL"];
@@ -122,7 +129,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
   const user = users[userID];
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], passinUser: user};
   res.render("urls_newTem", templateVars);
@@ -175,7 +182,12 @@ app.post("/register", (req, res) => {
   };
   // this needs to set the new cookie
   // but how come we need set a new cookie but not just use the res.cookie?
-  res.cookie("user_id", randomNewUserID);
+  // res.cookie("user_id", randomNewUserID);
+  // res.session("user_id", randomNewUserID);
+  req.session.user_id = randomNewUserID;
+
+  // req.session.user_id = "user_id";
+  // req.session.user_id = "user_id";
   res.redirect("/urls");
 });
 
@@ -187,7 +199,7 @@ app.post("/urls", (req, res) => {
   newLongURL = req.body["longURL"];
   urlDatabase[shortURL] = {};
   urlDatabase[shortURL]["longURL"] = newLongURL;
-  urlDatabase[shortURL]["userID"] = req.cookies["user_id"];
+  urlDatabase[shortURL]["userID"] = req.session.user_id;
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
@@ -195,7 +207,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   // codes
   ///
   console.log("jererererere");
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
   const user = users[userID];
   // This is the logIN case
   if (user === undefined){
@@ -208,15 +220,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  const randomNewUserID = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
   if (!emailLookHeler(email) || !bcrypt.compareSync(password, users[emailLookHeler(email)]["password"])) {
     res.status(403).send("Oh uh, account doesn't exist or the password doesn't match.");
   }
   else{
-    // this needs to set the new cookie
-    // but how come we need set a new cookie but not just use the res.cookie?
-    res.cookie("user_id", emailLookHeler(email));
+    // res.cookie("user_id", emailLookHeler(email));    
+    //error here
+    req.session.user_id = emailLookHeler(email);
+    
     // console.log(req.cookies);
     res.redirect("/urls");
   }
@@ -225,18 +239,20 @@ app.post("/login", (req, res) => {
 app.post("/logout/", (req, res) => {
   console.log("-------------------------------------------------------------------");
   console.log("In the LOGOUT page");
-  const inputName = req.cookies.user_id;
+  const inputName = req.session.user_id;
   console.log(typeof inputName);
   // console.log(req.cookies.user_id);
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortNewURL = req.params.shortURL;
-  // console.log(req);
+  console.log("IN THE SHORT URL POST PAGE");
+  console.log(req);
+
   const newLongURL = req.body['Long URL'];
-  urlDatabase[shortNewURL] = newLongURL;
+  urlDatabase[shortNewURL]["longURL"] = newLongURL;
   console.log("IN THE POST :SHORTURL Page: " + newLongURL);
   res.redirect("/urls");
 });
