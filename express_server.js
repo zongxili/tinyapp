@@ -7,6 +7,7 @@ const PORT = 8080;
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 var morgan = require('morgan');
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
 app.use(cookieParser());
@@ -152,7 +153,6 @@ app.post("/register", (req, res) => {
   const userPassword = req.body.password;
   console.log("userEmail: " + userEmail);
   console.log("userPassword: " + userPassword);
-
   // Handle Registration Errors
   if (userEmail === undefined || userPassword === undefined){
     res.status(403).send("Oh uh, one of or both of Email and password fields are UNDEFINED.");
@@ -163,10 +163,15 @@ app.post("/register", (req, res) => {
   if (emailLookHeler(userEmail)) {
     res.status(403).send("Oh uh, it seems like this email is already registered.");
   }
+
+  const hashedPassword = bcrypt.hashSync(userPassword, 10);
+  console.log("Password is: ", userPassword);
+  console.log("hashedPassword is: ", hashedPassword);
+
   users[randomNewUserID] = {
     id: randomNewUserID,
     email: userEmail,
-    password: userPassword
+    password: hashedPassword
   };
   // this needs to set the new cookie
   // but how come we need set a new cookie but not just use the res.cookie?
@@ -205,7 +210,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  if (!emailLookHeler(email) || users[emailLookHeler(email)]["password"] !== password ) {
+  if (!emailLookHeler(email) || !bcrypt.compareSync(password, users[emailLookHeler(email)]["password"])) {
     res.status(403).send("Oh uh, account doesn't exist or the password doesn't match.");
   }
   else{
