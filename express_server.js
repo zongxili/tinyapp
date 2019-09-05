@@ -3,6 +3,9 @@ var cookieSession = require('cookie-session');
 const app = express();
 const PORT = 8080;
 
+const { generateRandomString, getUserByEmail } = require('./helpers');
+
+// const { getUserByEmail } = require('../breedFetcher');
 // Set up field: initialize the Server Environment
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
@@ -32,26 +35,6 @@ const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
-
-const getUserByEmail = function(userEmail, database) {
-  let arrValue = Object.values(database);
-  for (let i = 0; i < arrValue.length; i++){
-    console.log("TEST________", arrValue[i]["email"], userEmail)
-  	if (arrValue[i]["email"] === userEmail ) {
-        return arrValue[i]["id"];
-    }
-  }
-  return null;
-};
-
-function generateRandomString() {
-  var returnOutput = "";
-  var charList = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for ( var i = 0; i < 6; i++ ) {
-    returnOutput += charList.charAt(Math.floor(Math.random() * charList.length));
-  }
-  return returnOutput;
-}
 
 app.get("/", (req, res) => {
   // Message disappear in the loaded page
@@ -222,13 +205,13 @@ app.post("/login", (req, res) => {
   const randomNewUserID = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-  if (!getUserByEmail(email, users) || !bcrypt.compareSync(password, users[getUserByEmail(email, users)]["password"])) {
+  if (!getUserByEmail(email, users) || !bcrypt.compareSync(password, getUserByEmail(email, users)["password"])) {
     res.status(403).send("Oh uh, account doesn't exist or the password doesn't match.");
   }
   else{
     // res.cookie("user_id", getUserByEmail(email));    
     //error here
-    req.session.user_id = getUserByEmail(email, users);
+    req.session.user_id = getUserByEmail(email, users).id;
     
     // console.log(req.cookies);
     res.redirect("/urls");
