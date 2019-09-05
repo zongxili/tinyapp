@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
 app.use(cookieParser());
 
+// Database area
 const users = { 
     "testingID123": {
     id: "testingID123", 
@@ -18,6 +19,11 @@ const users = {
     password: "purple-monkey-dinosaur"
   }
 }
+
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+};
 
 const emailLookHeler = function(userEmail) {
   let arrValue = Object.values(users);
@@ -28,11 +34,6 @@ const emailLookHeler = function(userEmail) {
     }
   }
   return false;
-};
-
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
 };
 
 function generateRandomString() {
@@ -73,10 +74,21 @@ app.get("/fetch", (req, res) => {
 app.get("/urls", (req, res) => {
   console.log("Here is the URLS GET page.");
   const userID = req.cookies["user_id"];
-  
   const user = users[userID];
-  // const passinUserEmail = user["email"];
-  let templateVars = { urls: urlDatabase, passinUser: user };
+  // This is the logIN case
+  let userDatabase = {};
+  if (user !== undefined){
+    const databaseArr =  Object.keys(urlDatabase);
+    for (let ele of databaseArr){
+      const shortURL = urlDatabase[ele];
+      console.log(shortURL);
+      if (user.id === urlDatabase[ele].userID) {
+        userDatabase[ele] = shortURL;
+        console.log(userDatabase);
+      }
+    }
+  }
+  let templateVars = { urls: userDatabase, passinUser: user };
   res.render("urls_index", templateVars);
 });
 
@@ -96,11 +108,13 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-
   const userID = req.cookies["user_id"];
   const user = users[userID];
-
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], passinUser: user};
+  console.log("req.body", req.body);
+  console.log("req.params", req.params);
+  shortLink = req.params.shortURL;
+  longLink = urlDatabase[shortLink]["longURL"];
+  let templateVars = { shortURL: shortLink, longURL: longLink, passinUser: user};
   res.render("urls_show", templateVars);
 });
 
@@ -158,10 +172,13 @@ app.post("/register", (req, res) => {
 
 app.post("/urls", (req, res) => {
   // codes
-  console.log("IN THE URLS POST PAGE:" + typeof req.body);
+  console.log("IN THE URLS POST PAGE:", typeof req.body);
+
   let shortURL = generateRandomString();
   newLongURL = req.body["longURL"];
-  urlDatabase[newLongURL] = shortURL;
+  urlDatabase[shortURL] = {};
+  urlDatabase[shortURL]["longURL"] = newLongURL;
+  urlDatabase[shortURL]["userID"] = req.cookies["user_id"];
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
