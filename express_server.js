@@ -20,6 +20,10 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 
+const bcrypt = require('bcrypt');
+const password = "purple-monkey-dinosaur"; // found in the req.params object
+const hashedPassword = bcrypt.hashSync(password, 10);
+
 // Database area
 const users = {
     "testingID123": {
