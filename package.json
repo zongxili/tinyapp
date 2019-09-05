@@ -19,10 +19,7 @@
   },
   "homepage": "https://github.com/zongxili/tinyapp#readme",
   "dependencies": {
-<<<<<<< HEAD
     "aes-js": "^3.1.2",
-=======
->>>>>>> feature/user-registration
     "bcrypt": "2.0.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",

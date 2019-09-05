@@ -8,7 +8,6 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 var morgan = require('morgan');
 const bcrypt = require('bcrypt');
-var aesjs = require('aes-js');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
@@ -19,10 +18,6 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
-
-const bcrypt = require('bcrypt');
-const password = "purple-monkey-dinosaur"; // found in the req.params object
-const hashedPassword = bcrypt.hashSync(password, 10);
 
 // Database area
 const users = {
@@ -38,15 +33,15 @@ const urlDatabase = {
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
-const emailLookHeler = function(userEmail) {
-  let arrValue = Object.values(users);
+const getUserByEmail = function(userEmail, database) {
+  let arrValue = Object.values(database);
   for (let i = 0; i < arrValue.length; i++){
     console.log("TEST________", arrValue[i]["email"], userEmail)
   	if (arrValue[i]["email"] === userEmail ) {
         return arrValue[i]["id"];
     }
   }
-  return false;
+  return null;
 };
 
 function generateRandomString() {
@@ -171,7 +166,7 @@ app.post("/register", (req, res) => {
   else if (userEmail === "" || userPassword === ""){
     res.status(403).send("Oh uh, one of or both of Email and password fields are empty.");
   }
-  if (emailLookHeler(userEmail)) {
+  if (getUserByEmail(userEmail, users)) {
     res.status(403).send("Oh uh, it seems like this email is already registered.");
   }
 
@@ -227,13 +222,13 @@ app.post("/login", (req, res) => {
   const randomNewUserID = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-  if (!emailLookHeler(email) || !bcrypt.compareSync(password, users[emailLookHeler(email)]["password"])) {
+  if (!getUserByEmail(email, users) || !bcrypt.compareSync(password, users[getUserByEmail(email, users)]["password"])) {
     res.status(403).send("Oh uh, account doesn't exist or the password doesn't match.");
   }
   else{
-    // res.cookie("user_id", emailLookHeler(email));    
+    // res.cookie("user_id", getUserByEmail(email));    
     //error here
-    req.session.user_id = emailLookHeler(email);
+    req.session.user_id = getUserByEmail(email, users);
     
     // console.log(req.cookies);
     res.redirect("/urls");
