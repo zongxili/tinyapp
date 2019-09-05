@@ -96,12 +96,14 @@ app.get("/urls/new", (req, res) => {
   console.log("In the URLS NEW GET page");
   console.log("This is REQ.COOKIE: ", req.cookies);
   console.log(Object.keys(req.cookies).length === 0);
-  if (Object.keys(req.cookies).length === 0) {
+
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
+  // This is the logIN case
+  if (user === undefined){
     res.redirect("/login");
   } else {
     console.log("IN THE STATEMENT!!!!_______________________");
-    const userID = req.cookies["user_id"];
-    const user = users[userID];
     let templateVars = { urls: urlDatabase, passinUser: user };
     res.render("urls_new", templateVars);
   }
@@ -133,9 +135,11 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  console.log("IN SHORT URL");
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(`/urls/${longURL}`);
+  console.log("IN GET SHORT URL");
+  console.log("Req here is ", req.params);
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL].longURL;
+  console.log("longURL =============", longURL);
   res.redirect(longURL);
 });
 
@@ -184,9 +188,18 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   // codes
-  const shortNewURL = req.params.shortURL;
-  delete urlDatabase[shortNewURL];
-  res.redirect("/urls");
+  ///
+  console.log("jererererere");
+  const userID = req.cookies["user_id"];
+  const user = users[userID];
+  // This is the logIN case
+  if (user === undefined){
+    res.redirect("/urls");
+  } else {
+    const shortNewURL = req.params.shortURL;
+    delete urlDatabase[shortNewURL];
+    res.redirect("/urls");
+  }
 });
 
 app.post("/login", (req, res) => {
