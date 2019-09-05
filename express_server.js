@@ -82,11 +82,17 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   console.log("In the URLS NEW GET page");
-
-  const userID = req.cookies["user_id"];
-  const user = users[userID];
-  let templateVars = { urls: urlDatabase, passinUser: user };
-  res.render("urls_new", templateVars);
+  console.log("This is REQ.COOKIE: ", req.cookies);
+  console.log(Object.keys(req.cookies).length === 0);
+  if (Object.keys(req.cookies).length === 0) {
+    res.redirect("/login");
+  } else {
+    console.log("IN THE STATEMENT!!!!_______________________");
+    const userID = req.cookies["user_id"];
+    const user = users[userID];
+    let templateVars = { urls: urlDatabase, passinUser: user };
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -108,7 +114,6 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   console.log("IN LOGIN GET");
   const longURL = urlDatabase[req.params.shortURL];
-
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], passinUser: undefined};
   res.render("urls_login", templateVars);
 });
@@ -168,16 +173,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  // const inputName = req.body.user_id;
-  // // console.log(req.cookies);
-  // const userID = req.cookies["user_id"];
-  // const user = users[userID];
-  // let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], passinUser: user};
-  // res.render("urls_newTem", templateVars);
-  
-  // res.cookie("user_id", inputName);
   const email = req.body.email;
-
   const password = req.body.password;
   if (!emailLookHeler(email) || users[emailLookHeler(email)]["password"] !== password ) {
     res.status(403).send("Oh uh, account doesn't exist or the password doesn't match.");
@@ -185,12 +181,10 @@ app.post("/login", (req, res) => {
   else{
     // this needs to set the new cookie
     // but how come we need set a new cookie but not just use the res.cookie?
-
     res.cookie("user_id", emailLookHeler(email));
     // console.log(req.cookies);
     res.redirect("/urls");
   }
-
 });
 
 app.post("/logout/", (req, res) => {
