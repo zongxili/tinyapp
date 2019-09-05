@@ -10,8 +10,7 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-
-   <% if( passinUser === undefined ){ %>
+   <% if( passinUser === undefined || passinUser.id === "nothing" ){ %>
     <!-- should display the login and register page -->
     <form method="GET" action="/login">
       <button type="submit" class="btn btn-light">Login</button>

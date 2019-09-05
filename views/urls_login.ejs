@@ -13,6 +13,12 @@
   <body>
     <% include partials/_header %>
     <main style="margin: 1em;">
+      <% if( !(passinUser === undefined) && passinUser.id === "nothing" ){ %>
+        <div class="alert alert-danger" role="alert">
+          <%= passinUser.error %>
+        </div>
+      <% } %>
+
       <h3>Login</h3>
       <form class="form-inline" method="POST" action="/login">
         <div class="form-group mb-2">
