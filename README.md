@@ -5,11 +5,20 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Final Product
 
 !["The urls page img with Login and Register buttons"](/docs/urls.png "urls page")
-- This is the page when the user first logins to the '/urls'
+- This is the page when the users first login to the '/urls', they can do Register or Login with the buttons.
 
-
+#### The page reacts differently with Not Login and Login
+!["screenshot description"](#)
+- 
 
 !["screenshot description"](#)
+- 
+
+!["screenshot description"](#)
+- 
+
+!["screenshot description"](#)
+- 
 
 ## Dependencies
 
