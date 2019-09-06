@@ -20,7 +20,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["The Register page"](/docs/register.png)
 - The above picture is the Register page which is the destination page of Register buttons in the '/urls' page.
 
-!["screenshot description"](#)
+
+#### After registering an account
+!["The Urls page after registering an account"](/docs/after_L:R/urls.png)
 - 
 
 ## Dependencies

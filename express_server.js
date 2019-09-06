@@ -91,7 +91,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session.userID;
   let user = users[userID]; // The user object we will check later
   const shortLink = req.params.shortURL;
-  if (urlDatabase[shortLink]){ // if the URL for the given ID does exist
+  if (urlDatabase[shortLink]) { // if the URL for the given ID does exist
     const longLink = urlDatabase[shortLink]["longURL"];
     let templateVars = { shortURL: shortLink, longURL: longLink, passinUser: user};
     res.render("urls_show", templateVars);
@@ -100,8 +100,7 @@ app.get("/urls/:shortURL", (req, res) => {
       const user = { id: "nothing", error: "Oh uh, URL for the given ID does not exist." };
       let templateVars = { urls: urlDatabase, passinUser: user };
       res.render("urls_login", templateVars);
-    }
-    else {
+    } else {
       let templateVars = { urls: urlDatabase, passinUser: user };
       res.render("urls_login", templateVars);
     }
@@ -122,7 +121,7 @@ app.get("/login", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  if (urlDatabase[shortURL]){
+  if (urlDatabase[shortURL]) {
     res.redirect(urlDatabase[shortURL].longURL);
   } else {
     const user = { id: "nothing", error: "Oh uh, URL for the given ID does not exist." };
