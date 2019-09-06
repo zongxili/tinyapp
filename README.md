@@ -23,16 +23,21 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 #### After registering / Loging in an account
 !["The Urls page after registering an account"](/docs/after_L:R/urls.png)
-- The app will lead the users to their own URLS
+- The app will lead the users to their own URLS, which is exactly the "My URLS" links will lead them to.
+- One thing worths to notice is, at the top right corner, users can see their user names there.
 
+!["Create an new URL"](/docs/after_L:R/create_new.png)
+- "The Create New URL" will lead the users to "/urls/new" page, at which they have a chance enter a URL link.
 
+!["My URL page after creating an new account"](/docs/after_L:R/after_submit_new.png)
+- The app will lead the users to their own URLS, which is exactly the "My URLS" links will lead them to.
 
+!["Edit the existing URL"](/docs/after_L:R/edit_link.png)
+- After hitting the "Edit" button, user can modify the URL link.
 
-
-
-
-
-
+!["Edit the existing URL"](/docs/after_L:R/after_update.png)
+- After hitting the "Update" button, the app goes back to the /urls/ page and shows the new URL link.
+- If the users hit the "Delete" button, the link will disappear.
 
 
 
