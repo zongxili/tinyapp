@@ -57,7 +57,6 @@ app.get("/fetch", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log("Here is the URLS GET page.");
   const userID = req.session.userID;
   const user = users[userID];
   // This is the logIN case
@@ -83,7 +82,6 @@ app.get("/urls/new", (req, res) => {
     let templateVars = { urls: urlDatabase, passinUser: user };
     res.render("urls_login", templateVars);
   } else {
-    console.log("IN THE STATEMENT!!!!_______________________");
     let templateVars = { urls: urlDatabase, passinUser: user };
     res.render("urls_new", templateVars);
   }
@@ -91,12 +89,23 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session.userID;
-  const user = users[userID];
-  console.log("req.params", req.params);
+  let user = users[userID]; // The user object we will check later
   const shortLink = req.params.shortURL;
-  const longLink = urlDatabase[shortLink]["longURL"];
-  let templateVars = { shortURL: shortLink, longURL: longLink, passinUser: user};
-  res.render("urls_show", templateVars);
+  if (urlDatabase[shortLink]){ // if the URL for the given ID does exist
+    const longLink = urlDatabase[shortLink]["longURL"];
+    let templateVars = { shortURL: shortLink, longURL: longLink, passinUser: user};
+    res.render("urls_show", templateVars);
+  } else {
+    if (user === undefined) {
+      const user = { id: "nothing", error: "Oh uh, URL for the given ID does not exist." };
+      let templateVars = { urls: urlDatabase, passinUser: user };
+      res.render("urls_login", templateVars);
+    }
+    else {
+      let templateVars = { urls: urlDatabase, passinUser: user };
+      res.render("urls_login", templateVars);
+    }
+  }
 });
 
 app.get("/register", (req, res) => {
@@ -107,18 +116,19 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  console.log("IN LOGIN GET");
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], passinUser: undefined};
   res.render("urls_login", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  console.log("IN GET SHORT URL");
-  console.log("Req here is ", req.params);
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  console.log("longURL =============", longURL);
-  res.redirect(longURL);
+  if (urlDatabase[shortURL]){
+    res.redirect(urlDatabase[shortURL].longURL);
+  } else {
+    const user = { id: "nothing", error: "Oh uh, URL for the given ID does not exist." };
+    let templateVars = { urls: urlDatabase, passinUser: user };
+    res.render("urls_register", templateVars);
+  }
 });
 
 // POST methods
@@ -144,13 +154,13 @@ app.post("/register", (req, res) => {
     let templateVars = { urls: urlDatabase, passinUser: user };
     res.render("urls_register", templateVars);
   }
-  const hashedPassword = bcrypt.hashSync(userPassword, 10);
-  users[randomNewUserID] = {
+  const hashedPassword = bcrypt.hashSync(userPassword, 10); // encrypts the new user's password with bcrypt
+  users[randomNewUserID] = { // Creating a new User
     id: randomNewUserID,
     email: userEmail,
     password: hashedPassword
   };
-  req.session.userID = randomNewUserID;
+  req.session.userID = randomNewUserID; // Set a cookie
   res.redirect("/urls");
 });
 
@@ -180,22 +190,22 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   if (!getUserByEmail(email, users) || !bcrypt.compareSync(password, getUserByEmail(email, users)["password"])) { // If the email or password not match
     res.status(403);
-    const user = { id: "nothing", email: "The email or the password don't match.", password: null };
+    const user = { id: "nothing", error: "The email or the password don't match.", password: null };
     let templateVars = { urls: urlDatabase, passinUser: user };
     res.render("urls_login", templateVars);
   } else if (email === "" || password === "") { // One of those field is empty
     res.status(403);
-    const user = { id: "nothing", email: "Please don't leave any of those field empty.", password: null };
+    const user = { id: "nothing", error: "Please don't leave any of those field empty.", password: null };
     let templateVars = { urls: urlDatabase, passinUser: user };
     res.render("urls_login", templateVars);
-  } else {
+  } else { // Matching case
     req.session.userID = getUserByEmail(email, users).id;
     res.redirect("/urls");
   }
 });
 
 app.post("/logout/", (req, res) => {
-  req.session = null;
+  req.session = null; // Delete cookie
   res.redirect("/urls");
 });
 
