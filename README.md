@@ -8,14 +8,17 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - This is the page when the users first login to the '/urls', they can do Register or Login with the buttons.
 
 #### The page reacts differently with Not Login and Login
-!["screenshot description"](#)
-- 
+!["Scrolling down the Menu Bar in urls page when users not login"](/docs/urls_scrolldown.png )
+- There are 2 links when the users scroll the Menu Bar down: 'My URLS' and 'Create New URL'
 
-!["screenshot description"](#)
-- 
+!["The 'Create New URL' goes to its page but with Login text"](/docs/urls/new.png)
+- The "My URLS" is being redirected to the same page; the "Create New URL" will goes to its own page and does not show any URL but a Error Messaeg like above.
 
-!["screenshot description"](#)
-- 
+!["The Login page"](/docs/login.png)
+- The above picture is the Login page which is the destination page of Login buttons in the '/urls' page.
+
+!["The Register page"](/docs/register.png)
+- The above picture is the Register page which is the destination page of Register buttons in the '/urls' page.
 
 !["screenshot description"](#)
 - 
