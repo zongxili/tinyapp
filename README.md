@@ -11,7 +11,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["Scrolling down the Menu Bar in urls page when users not login"](/docs/urls_scrolldown.png )
 - There are 2 links when the users scroll the Menu Bar down: 'My URLS' and 'Create New URL'
 
-!["The 'Create New URL' goes to its page but with Login text"](/docs/urls/new.png)
+!["The 'Create New URL' goes to its page but with Login text"](/docs/urls:new.png)
 - The "My URLS" is being redirected to the same page; the "Create New URL" will goes to its own page and does not show any URL but a Error Messaeg like above.
 
 !["The Login page"](/docs/:login.png)
@@ -24,6 +24,20 @@ TinyApp is a full stack web application built with Node and Express that allows 
 #### After registering / Loging in an account
 !["The Urls page after registering an account"](/docs/after_L:R/urls.png)
 - The app will lead the users to their own URLS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Dependencies
 
 - Node.js
