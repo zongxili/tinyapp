@@ -14,17 +14,16 @@ TinyApp is a full stack web application built with Node and Express that allows 
 !["The 'Create New URL' goes to its page but with Login text"](/docs/urls/new.png)
 - The "My URLS" is being redirected to the same page; the "Create New URL" will goes to its own page and does not show any URL but a Error Messaeg like above.
 
-!["The Login page"](/docs/login.png)
+!["The Login page"](/docs/:login.png)
 - The above picture is the Login page which is the destination page of Login buttons in the '/urls' page.
 
-!["The Register page"](/docs/register.png)
+!["The Register page"](/docs/:register.png)
 - The above picture is the Register page which is the destination page of Register buttons in the '/urls' page.
 
 
-#### After registering an account
+#### After registering / Loging in an account
 !["The Urls page after registering an account"](/docs/after_L:R/urls.png)
-- 
-
+- The app will lead the users to their own URLS
 ## Dependencies
 
 - Node.js
